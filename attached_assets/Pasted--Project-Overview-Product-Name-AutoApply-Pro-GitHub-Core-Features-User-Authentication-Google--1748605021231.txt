@@ -1,0 +1,145 @@
+🧠 Project Overview
+Product Name: AutoApply Pro
+GitHub
+
+Core Features:
+
+User Authentication: Google Sign-In for seamless access.
+
+Subscription Plans: Tiered pricing (Free, Monthly, Lifetime) with payment integration.
+
+User Profile Management: Resume upload, personal details, job preferences.
+
+AI-Powered Job Search: Automated job discovery based on user profiles.
+
+Browser Extension: Firefox extension for auto-filling job applications.
+
+Dashboard: Track applications, monitor statuses, and manage preferences.
+autoapplier.com
+
+🧱 Technical Architecture
+Frontend
+Framework: React.js with Next.js for server-side rendering.
+
+UI Library: Tailwind CSS for responsive design.
+
+Authentication: Firebase Authentication with Google Sign-In.
+
+State Management: Redux or Context API.
+
+Backend
+Server: Node.js with Express.js.
+
+Database: MongoDB for storing user profiles and application data.
+
+AI Integration: OpenAI API for generating tailored responses.
+
+Payment Processing: Stripe API for handling subscriptions.
+Reddit
+Chrome Web Store
+arXiv
++3
+OwlApply
++3
+GitHub
++3
+
+Browser Extension (Firefox)
+Language: JavaScript with WebExtension APIs.
+
+Features:
+
+Detect job application forms on websites.
+
+Auto-fill forms using stored user data.
+
+Communicate with backend for AI-generated responses.
+arXiv
++17
+OwlApply
++17
+GitHub
++17
+
+🔐 User Flow
+Sign-Up/Login:
+
+User signs in using Google.
+
+A new account is created in the system.
+
+Subscription:
+
+User selects a plan (Free, Monthly, Lifetime).
+
+Payment is processed via Stripe.
+
+Profile Setup:
+
+User uploads resume and fills in personal details.
+
+Preferences like desired job titles, locations, and industries are set.
+LazyApply
+
+Job Search & Application:
+
+Automated Search:
+
+AI scans job portals (e.g., LinkedIn, Indeed) for matching jobs.
+
+Applications are auto-filled and submitted.
+
+Manual Application:
+
+User browses job listings.
+
+On job application pages, the Firefox extension auto-fills forms using AI-generated responses.
+
+Dashboard:
+
+User tracks submitted applications, statuses, and receives recommendations.
+autoapplier.com
+
+🛠️ AI Integration Details
+Resume Parsing: Extract key information (skills, experience) from uploaded resumes.
+
+Job Description Analysis: AI evaluates job postings to determine suitability.
+
+Tailored Responses: Generate personalized answers for application questions using OpenAI's GPT models.
+GitHub
++11
+Reddit
++11
+OwlApply
++11
+GitHub
+
+📦 Deployment & Hosting
+Frontend & Backend: Deployed on platforms like Vercel or Netlify.
+
+Database: MongoDB Atlas for scalable cloud database hosting.
+
+Browser Extension: Published on Mozilla Add-ons for Firefox.
+flashapply.ai
++1
+Upwork
++1
+
+📄 Prompt for AI Web Builder
+To initiate the development using an AI web builder, you can use the following prompt:
+
+"Build a full-stack web application named 'AutoApply Pro' that allows users to automate job applications. The app should include Google Sign-In authentication, subscription-based access with Stripe integration, user profile management (including resume upload), and a dashboard to track applications. Additionally, develop a Firefox browser extension that auto-fills job application forms using AI-generated responses based on user data and job descriptions. The backend should be built with Node.js and Express.js, using MongoDB for data storage, and integrate OpenAI's API for generating tailored application responses."
+GitHub
+
+🔗 References & Inspiration
+LazyApply: An AI-powered tool that automates job applications on platforms like LinkedIn and Indeed.
+
+AutoApplier: Offers LinkedIn automation with AI-generated resumes and cover letters.
+
+OwlApply: Provides AI-driven autofill for job applications across various platforms. 
+Chrome Web Store
++4
+New York Post
++4
+LazyApply
++4

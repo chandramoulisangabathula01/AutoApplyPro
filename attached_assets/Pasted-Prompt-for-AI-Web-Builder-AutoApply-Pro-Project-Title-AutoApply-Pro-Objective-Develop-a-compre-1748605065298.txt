@@ -1,0 +1,80 @@
+Prompt for AI Web Builder: "AutoApply Pro"
+Project Title: AutoApply Pro
+
+Objective: Develop a comprehensive full-stack web application and a Firefox browser extension that automates job applications using AI. The platform should offer user authentication, subscription-based access, profile management, AI-driven job search and application, and a user dashboard.
+
+🔐 User Authentication:
+Method: Implement Google Sign-In for user authentication.
+
+Account Creation: Upon successful sign-in, create a user account in the system.
+
+💳 Subscription Plans:
+Plan Options:
+
+Free Trial: Limited features for a short duration.
+
+Monthly Plan: Full features with monthly billing.
+
+Lifetime Access: One-time payment for perpetual access.
+
+Payment Integration: Use Stripe API to handle payments securely.
+
+Access Control: Restrict features based on the user's subscription plan.
+
+👤 User Profile Management:
+Resume Upload: Allow users to upload their resumes in PDF or DOCX format.
+
+Personal Details: Collect information such as name, contact details, education, experience, and skills.
+
+Job Preferences: Enable users to specify desired job titles, locations, industries, and other preferences.
+
+🤖 AI-Powered Job Search & Application:
+Automated Job Search:
+
+Integrate with job portals like LinkedIn and Indeed.
+
+Use AI to match user profiles with suitable job listings.
+
+Automated Application:
+
+Develop a Firefox browser extension that detects job application forms.
+
+Auto-fill forms using user data and AI-generated responses.
+
+Allow users to manually trigger the extension on specific job pages.
+
+📊 User Dashboard:
+Application Tracking: Display a list of jobs applied to, along with statuses.
+
+Analytics: Provide insights such as the number of applications sent, response rates, and success metrics.
+
+Profile Management: Allow users to update their resumes and preferences.
+
+🛠️ Technical Stack:
+Frontend: React.js with Next.js for server-side rendering.
+
+Backend: Node.js with Express.js.
+
+Database: MongoDB for storing user data and application history.
+
+Authentication: Firebase Authentication with Google Sign-In.
+
+Payment Processing: Stripe API.
+
+AI Integration: OpenAI API for generating tailored responses.
+
+Browser Extension: JavaScript using WebExtension APIs for Firefox.
+
+🌐 Deployment & Hosting:
+Web Application: Deploy on platforms like Vercel or Netlify.
+
+Database Hosting: Use MongoDB Atlas for scalable cloud database hosting.
+
+Browser Extension: Publish on Mozilla Add-ons for Firefox.
+
+📄 Additional Notes:
+User Experience: Ensure a seamless and intuitive user interface.
+
+Security: Implement best practices for data security and user privacy.
+
+Scalability: Design the system to handle a growing user base and increased data load.
