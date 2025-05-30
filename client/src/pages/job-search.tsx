@@ -242,3 +242,44 @@ export default function JobSearch() {
     </div>
   );
 }
+const mockJobs = [
+    {
+        id: '1',
+        title: 'Software Engineer',
+        company: 'TechCorp',
+        location: 'San Francisco, CA',
+        type: 'Full Time',
+        description: 'Looking for a skilled software engineer to join our team.',
+        salary: '$120,000 - $150,000',
+        postedTime: '2 days ago',
+        applicants: '50+',
+        skills: ['JavaScript', 'React', 'Node.js'],
+        matchPercentage: 85,
+    },
+    {
+        id: '2',
+        title: 'Data Scientist',
+        company: 'DataSolutions',
+        location: 'New York, NY',
+        type: 'Full Time',
+        description: 'Seeking a data scientist with experience in machine learning.',
+        salary: '$130,000 - $160,000',
+        postedTime: '5 days ago',
+        applicants: '30+',
+        skills: ['Python', 'Machine Learning', 'Data Analysis'],
+        matchPercentage: 92,
+    },
+    {
+        id: '3',
+        title: 'Frontend Developer',
+        company: 'WebDev Inc.',
+        location: 'Austin, TX',
+        type: 'Contract',
+        description: 'We need a frontend developer to help build our new web app.',
+        salary: '$60 - $80 per hour',
+        postedTime: '1 week ago',
+        applicants: '20+',
+        skills: ['React', 'JavaScript', 'HTML', 'CSS'],
+        matchPercentage: 78,
+    },
+];
