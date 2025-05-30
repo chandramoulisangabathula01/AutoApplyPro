@@ -301,9 +301,19 @@ Please provide a professional, tailored response that highlights relevant experi
           subscriptionStatus: 'active',
         });
 
+        const latestInvoice = subscription.latest_invoice;
+        let clientSecret = null;
+        
+        if (latestInvoice && typeof latestInvoice === 'object') {
+          const invoice = latestInvoice as any;
+          if (invoice.payment_intent && typeof invoice.payment_intent === 'object') {
+            clientSecret = invoice.payment_intent.client_secret;
+          }
+        }
+
         res.json({
           subscriptionId: subscription.id,
-          clientSecret: subscription.latest_invoice?.payment_intent?.client_secret,
+          clientSecret,
         });
       } catch (error: any) {
         console.error("Error creating subscription:", error);
