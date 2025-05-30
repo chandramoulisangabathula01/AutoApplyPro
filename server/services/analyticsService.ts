@@ -36,10 +36,10 @@ export class AnalyticsService {
     // Calculate basic metrics
     const totalApplications = allApplications.length;
     const thisWeekApplications = allApplications.filter(
-      app => new Date(app.appliedAt) >= oneWeekAgo
+      app => app.appliedAt && new Date(app.appliedAt) >= oneWeekAgo
     ).length;
     const thisMonthApplications = allApplications.filter(
-      app => new Date(app.appliedAt) >= oneMonthAgo
+      app => app.appliedAt && new Date(app.appliedAt) >= oneMonthAgo
     ).length;
 
     // Calculate rates
@@ -63,14 +63,19 @@ export class AnalyticsService {
     );
     const averageResponseTime = applicationsWithResponse.length > 0
       ? applicationsWithResponse.reduce((sum, app) => {
-          const responseTime = new Date(app.responseDate!).getTime() - new Date(app.appliedAt).getTime();
-          return sum + responseTime;
+          if (app.responseDate && app.appliedAt) {
+            const responseTime = new Date(app.responseDate).getTime() - new Date(app.appliedAt).getTime();
+            return sum + responseTime;
+          }
+          return sum;
         }, 0) / applicationsWithResponse.length / (1000 * 60 * 60 * 24) // Convert to days
       : 0;
 
     // Top companies
     const companyCounts = allApplications.reduce((acc, app) => {
-      acc[app.company] = (acc[app.company] || 0) + 1;
+      if (app.company) {
+        acc[app.company] = (acc[app.company] || 0) + 1;
+      }
       return acc;
     }, {} as Record<string, number>);
     const topCompanies = Object.entries(companyCounts)
@@ -80,7 +85,9 @@ export class AnalyticsService {
 
     // Applications by status
     const statusCounts = allApplications.reduce((acc, app) => {
-      acc[app.status] = (acc[app.status] || 0) + 1;
+      if (app.status) {
+        acc[app.status] = (acc[app.status] || 0) + 1;
+      }
       return acc;
     }, {} as Record<string, number>);
     const applicationsByStatus = Object.entries(statusCounts)
@@ -92,8 +99,11 @@ export class AnalyticsService {
       const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
       const dateStr = date.toISOString().split('T')[0];
       const count = allApplications.filter(app => {
-        const appDate = new Date(app.appliedAt).toISOString().split('T')[0];
-        return appDate === dateStr;
+        if (app.appliedAt) {
+          const appDate = new Date(app.appliedAt).toISOString().split('T')[0];
+          return appDate === dateStr;
+        }
+        return false;
       }).length;
       applicationTrends.push({ date: dateStr, count });
     }

@@ -153,6 +153,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put('/api/applications/:id/status', isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
       const applicationId = parseInt(req.params.id);
       const { status, notes } = req.body;
       const responseDate = status !== 'pending' ? new Date() : undefined;
@@ -163,6 +164,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         responseDate,
         notes
       );
+
+      // Send email notification if enabled
+      const user = await storage.getUser(userId);
+      if (user?.email && status !== 'pending') {
+        await emailService.sendApplicationStatusUpdate(
+          user.email,
+          user.fullName || user.firstName || 'User',
+          application.jobTitle,
+          application.company,
+          status
+        );
+      }
+
       res.json(application);
     } catch (error) {
       console.error("Error updating application status:", error);
@@ -342,6 +356,157 @@ Please provide a professional, tailored response that highlights relevant experi
     } catch (error) {
       console.error("Error searching jobs:", error);
       res.status(500).json({ message: "Failed to search jobs" });
+    }
+  });
+
+  // Analytics routes
+  app.get('/api/analytics/applications', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const analytics = await analyticsService.getUserApplicationAnalytics(userId);
+      res.json(analytics);
+    } catch (error) {
+      console.error("Error fetching application analytics:", error);
+      res.status(500).json({ message: "Failed to fetch analytics" });
+    }
+  });
+
+  app.get('/api/analytics/metrics', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const metrics = await analyticsService.getUserMetrics(userId);
+      res.json(metrics);
+    } catch (error) {
+      console.error("Error fetching user metrics:", error);
+      res.status(500).json({ message: "Failed to fetch metrics" });
+    }
+  });
+
+  // Job search routes
+  app.post('/api/jobs/search', isAuthenticated, async (req: any, res) => {
+    try {
+      const { keywords, location, experienceLevel, salaryMin, salaryMax, jobType, datePosted } = req.body;
+      const searchParams = { keywords, location, experienceLevel, salaryMin, salaryMax, jobType, datePosted };
+      
+      const jobs = await jobPortalService.searchAllPortals(searchParams);
+      res.json(jobs);
+    } catch (error) {
+      console.error("Error searching jobs:", error);
+      res.status(500).json({ message: "Failed to search jobs" });
+    }
+  });
+
+  app.post('/api/jobs/calculate-match', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { job } = req.body;
+      const user = await storage.getUser(userId);
+      
+      const matchPercentage = await jobPortalService.calculateJobMatch(job, user);
+      res.json({ matchPercentage });
+    } catch (error) {
+      console.error("Error calculating job match:", error);
+      res.status(500).json({ message: "Failed to calculate job match" });
+    }
+  });
+
+  app.post('/api/jobs/generate-cover-letter', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { job } = req.body;
+      const user = await storage.getUser(userId);
+      
+      const coverLetter = await jobPortalService.generateCoverLetter(job, user);
+      res.json({ coverLetter });
+    } catch (error) {
+      console.error("Error generating cover letter:", error);
+      res.status(500).json({ message: "Failed to generate cover letter" });
+    }
+  });
+
+  // Resume parsing route
+  app.post('/api/resume/parse', isAuthenticated, upload.single('resume'), async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const filePath = req.file.path;
+      const fileContent = fs.readFileSync(filePath, 'base64');
+      
+      const prompt = `
+      Extract structured information from this resume and return it in JSON format:
+      {
+        "fullName": "string",
+        "email": "string", 
+        "phone": "string",
+        "linkedin": "string",
+        "skills": ["array of skills"],
+        "experience": ["array of work experiences"],
+        "education": ["array of education entries"],
+        "summary": "professional summary"
+      }
+      
+      Please analyze this resume file and extract the information accurately.
+      `;
+
+      const result = await model.generateContent([
+        {
+          inlineData: {
+            mimeType: req.file.mimetype,
+            data: fileContent
+          }
+        },
+        { text: prompt }
+      ]);
+
+      const response = result.response.text();
+      let parsedData;
+      
+      try {
+        parsedData = JSON.parse(response);
+      } catch {
+        // If JSON parsing fails, return a basic structure
+        parsedData = { message: "Resume parsing completed, but structured data extraction failed" };
+      }
+
+      // Clean up uploaded file
+      fs.unlinkSync(filePath);
+      
+      res.json(parsedData);
+    } catch (error) {
+      console.error("Error parsing resume:", error);
+      res.status(500).json({ message: "Failed to parse resume" });
+    }
+  });
+
+  // Email notification routes
+  app.post('/api/email/weekly-report', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      const analytics = await analyticsService.getUserApplicationAnalytics(userId);
+      
+      if (user?.email) {
+        const success = await emailService.sendWeeklyReport(
+          user.email,
+          user.fullName || user.firstName || 'User',
+          {
+            applicationsThisWeek: analytics.thisWeekApplications,
+            totalApplications: analytics.totalApplications,
+            responses: Math.round(analytics.responseRate / 100 * analytics.totalApplications),
+            interviews: Math.round(analytics.interviewRate / 100 * analytics.totalApplications)
+          }
+        );
+        res.json({ success });
+      } else {
+        res.status(400).json({ message: "No email address found" });
+      }
+    } catch (error) {
+      console.error("Error sending weekly report:", error);
+      res.status(500).json({ message: "Failed to send weekly report" });
     }
   });
 
