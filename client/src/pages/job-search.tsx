@@ -21,7 +21,7 @@ import {
 export default function JobSearch() {
   const [searchTerm, setSearchTerm] = useState("");
   const [location, setLocation] = useState("");
-  const [experienceLevel, setExperienceLevel] = useState("");
+  const [experienceLevel, setExperienceLevel] = useState("any");
 
   const [isSearching, setIsSearching] = useState(false);
   const [jobs, setJobs] = useState<any[]>([]);
