@@ -7,21 +7,18 @@ import { insertJobApplicationSchema, insertAiResponseSchema } from "@shared/sche
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import Stripe from "stripe";
 
-// Initialize OpenAI
-const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_SECRET_KEY || "your-openai-api-key"
-});
+// Initialize Google Gemini
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
 // Initialize Stripe
 if (!process.env.STRIPE_SECRET_KEY) {
   console.warn('STRIPE_SECRET_KEY not found in environment variables');
 }
-const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2023-10-16",
-}) : null;
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 // Configure multer for file uploads
 const uploadDir = path.join(process.cwd(), 'uploads', 'resumes');
@@ -187,49 +184,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Create context for AI
-      const context = `
-        User Profile:
-        - Name: ${user.fullName || user.firstName + ' ' + user.lastName}
-        - Skills: ${user.skills?.join(', ') || 'Not specified'}
-        - Job Preferences: ${user.desiredJobTitles || 'Not specified'}
-        
-        Job Context:
-        - Position: ${jobTitle || 'Not specified'}
-        - Company: ${company || 'Not specified'}
-        - Description: ${jobDescription || 'Not specified'}
-        
-        Question: ${question}
-        
-        Please provide a professional, tailored response that highlights relevant experience and skills. 
-        Make it concise but compelling. Respond in JSON format with a "response" field.
-      `;
+      const prompt = `You are a professional career advisor helping users create compelling responses to job application questions.
 
-      // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: "You are a professional career advisor helping users create compelling responses to job application questions. Always respond with valid JSON containing a 'response' field."
-          },
-          {
-            role: "user",
-            content: context
-          }
-        ],
-        response_format: { type: "json_object" },
-      });
+User Profile:
+- Name: ${user.fullName || user.firstName + ' ' + user.lastName}
+- Skills: ${user.skills?.join(', ') || 'Not specified'}
+- Job Preferences: ${user.desiredJobTitles || 'Not specified'}
 
-      const aiResponse = JSON.parse(completion.choices[0].message.content || '{"response": ""}');
+Job Context:
+- Position: ${jobTitle || 'Not specified'}
+- Company: ${company || 'Not specified'}
+- Description: ${jobDescription || 'Not specified'}
+
+Question: ${question}
+
+Please provide a professional, tailored response that highlights relevant experience and skills. Make it concise but compelling. Respond with only the answer text, no additional formatting or explanations.`;
+
+      const result = await model.generateContent(prompt);
+      const response = result.response;
+      const aiResponseText = response.text();
       
       // Save the AI response
       await storage.createAiResponse({
         userId,
         question,
-        response: aiResponse.response,
+        response: aiResponseText,
       });
 
-      res.json({ response: aiResponse.response });
+      res.json({ response: aiResponseText });
     } catch (error) {
       console.error("Error generating AI response:", error);
       res.status(500).json({ message: "Failed to generate AI response" });
@@ -275,9 +257,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Check if user already has a subscription
         if (user.stripeSubscriptionId) {
           const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+          const latestInvoice = subscription.latest_invoice;
+          let clientSecret = null;
+          
+          if (latestInvoice && typeof latestInvoice === 'object') {
+            const invoice = latestInvoice as any;
+            if (invoice.payment_intent && typeof invoice.payment_intent === 'object') {
+              clientSecret = invoice.payment_intent.client_secret;
+            }
+          }
+          
           return res.json({
             subscriptionId: subscription.id,
-            clientSecret: subscription.latest_invoice?.payment_intent?.client_secret,
+            clientSecret,
           });
         }
 
