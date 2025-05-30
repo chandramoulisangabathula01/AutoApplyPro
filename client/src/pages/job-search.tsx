@@ -23,18 +23,42 @@ export default function JobSearch() {
   const [location, setLocation] = useState("");
   const [experienceLevel, setExperienceLevel] = useState("");
 
-  const { data: jobs = [], isLoading } = useQuery({
-    queryKey: ["/api/jobs/search", searchTerm, location, experienceLevel],
-    enabled: false, // Don't auto-fetch since we have no real job API
-  });
+  const [isSearching, setIsSearching] = useState(false);
+  const [jobs, setJobs] = useState<any[]>([]);
 
-  const handleSearch = () => {
-    // In a real implementation, this would trigger the job search API
-    console.log("Searching for jobs:", { searchTerm, location, experienceLevel });
+  const handleSearch = async () => {
+    if (!searchTerm.trim()) {
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const response = await fetch('/api/jobs/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          keywords: searchTerm,
+          location: location,
+          experienceLevel: experienceLevel === 'any' ? '' : experienceLevel
+        })
+      });
+
+      if (response.ok) {
+        const jobData = await response.json();
+        setJobs(jobData);
+      } else {
+        console.error('Failed to search jobs');
+        setJobs([]);
+      }
+    } catch (error) {
+      console.error('Error searching jobs:', error);
+      setJobs([]);
+    } finally {
+      setIsSearching(false);
+    }
   };
-
-  // Since we don't have real job data, show empty state
-  const mockJobs: any[] = [];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -117,11 +141,11 @@ export default function JobSearch() {
 
         {/* Job Listings */}
         <div className="space-y-4">
-          {isLoading ? (
+          {isSearching ? (
             <div className="flex justify-center py-12">
               <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
             </div>
-          ) : mockJobs.length === 0 ? (
+          ) : jobs.length === 0 ? (
             <Card>
               <CardContent className="p-12 text-center">
                 <SearchIcon className="h-16 w-16 text-muted-foreground mx-auto mb-4" />

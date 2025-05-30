@@ -301,12 +301,27 @@ Please provide a professional, tailored response that highlights relevant experi
           user = await storage.updateUserStripeInfo(userId, { stripeCustomerId: customerId });
         }
 
+        // Create subscription with a default price or create one on the fly
+        let subscriptionPriceId = priceId;
+        
+        if (!subscriptionPriceId) {
+          // Create a default price if none exists
+          const price = await stripe.prices.create({
+            unit_amount: 1900, // $19.00
+            currency: 'usd',
+            recurring: { interval: 'month' },
+            product_data: {
+              name: 'AutoApply Pro Monthly',
+              description: 'Monthly subscription to AutoApply Pro'
+            },
+          });
+          subscriptionPriceId = price.id;
+        }
+
         // Create subscription
         const subscription = await stripe.subscriptions.create({
           customer: customerId,
-          items: [{
-            price: priceId || process.env.STRIPE_PRICE_ID || 'price_default',
-          }],
+          items: [{ price: subscriptionPriceId }],
           payment_behavior: 'default_incomplete',
           expand: ['latest_invoice.payment_intent'],
         });
