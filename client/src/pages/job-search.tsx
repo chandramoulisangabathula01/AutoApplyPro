@@ -100,15 +100,16 @@ export default function JobSearch() {
 
               <div>
                 <Label htmlFor="experience">Experience Level</Label>
-                <Select value={experienceLevel} onValueChange={setExperienceLevel}>
+                <Select value={experienceLevel || "any"} onValueChange={setExperienceLevel}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Any Experience" />
+                    <SelectValue placeholder="Select experience level" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="any">Any Experience</SelectItem>
+                    <SelectItem value="any">Any Level</SelectItem>
                     <SelectItem value="entry">Entry Level</SelectItem>
                     <SelectItem value="mid">Mid Level</SelectItem>
                     <SelectItem value="senior">Senior Level</SelectItem>
+                    <SelectItem value="executive">Executive</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
