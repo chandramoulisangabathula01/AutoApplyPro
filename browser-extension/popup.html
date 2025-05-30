@@ -5,181 +5,199 @@
   <style>
     body {
       width: 350px;
-      min-height: 400px;
-      margin: 0;
-      padding: 16px;
+      padding: 20px;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f8fafc;
+      margin: 0;
     }
     .header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid #e2e8f0;
+      text-align: center;
+      margin-bottom: 20px;
     }
     .logo {
-      width: 24px;
-      height: 24px;
-      background: #2563eb;
-      border-radius: 6px;
-      margin-right: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
+      font-size: 20px;
       font-weight: bold;
+      color: #2563eb;
+      margin-bottom: 5px;
     }
-    .title {
-      font-size: 16px;
+    .connection-status {
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      text-align: center;
+      font-size: 14px;
+    }
+    .connected {
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+    .disconnected {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    .section-title {
       font-weight: 600;
-      color: #1e293b;
+      margin-bottom: 10px;
+      color: #374151;
     }
-    .status {
-      padding: 12px;
-      background: white;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
-      margin-bottom: 16px;
-    }
-    .status-indicator {
-      display: flex;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      margin-right: 8px;
-    }
-    .dot.connected { background: #10b981; }
-    .dot.disconnected { background: #ef4444; }
-    .button {
+    button {
       width: 100%;
-      padding: 10px 16px;
-      background: #2563eb;
-      color: white;
+      padding: 10px;
+      margin-bottom: 8px;
       border: none;
       border-radius: 6px;
       font-size: 14px;
-      font-weight: 500;
       cursor: pointer;
-      margin-bottom: 8px;
+      font-weight: 500;
     }
-    .button:hover {
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+    }
+    .btn-primary:hover {
       background: #1d4ed8;
     }
-    .button.secondary {
-      background: #f1f5f9;
-      color: #475569;
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+      border: 1px solid #d1d5db;
     }
-    .button.secondary:hover {
-      background: #e2e8f0;
+    .btn-secondary:hover {
+      background: #e5e7eb;
     }
-    .form-fields {
-      display: none;
-      background: white;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
-      margin-top: 16px;
+    .btn-success {
+      background: #10b981;
+      color: white;
     }
-    .field-group {
-      margin-bottom: 12px;
+    .btn-success:hover {
+      background: #059669;
     }
-    .field-group:last-child {
-      margin-bottom: 0;
+    .form-field {
+      margin-bottom: 15px;
     }
-    label {
+    .form-field label {
       display: block;
-      font-size: 12px;
+      margin-bottom: 5px;
+      font-size: 13px;
       font-weight: 500;
       color: #374151;
-      margin-bottom: 4px;
     }
-    input, textarea {
+    .form-field input, .form-field textarea {
       width: 100%;
-      padding: 6px 8px;
+      padding: 8px;
       border: 1px solid #d1d5db;
       border-radius: 4px;
-      font-size: 13px;
+      font-size: 14px;
       box-sizing: border-box;
     }
-    textarea {
-      height: 60px;
+    .form-field textarea {
+      height: 80px;
       resize: vertical;
     }
     .detected-fields {
-      background: #f0f9ff;
-      border: 1px solid #0ea5e9;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
       border-radius: 6px;
-      padding: 8px;
-      margin-bottom: 12px;
+      padding: 12px;
+      margin-bottom: 15px;
     }
-    .detected-title {
-      font-size: 12px;
+    .field-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+      font-size: 13px;
+    }
+    .field-label {
+      color: #64748b;
+    }
+    .field-status {
       font-weight: 500;
-      color: #0369a1;
-      margin-bottom: 4px;
     }
-    .detected-field {
-      font-size: 11px;
-      color: #0369a1;
+    .status-found {
+      color: #10b981;
+    }
+    .status-missing {
+      color: #f59e0b;
+    }
+    .hidden {
+      display: none;
+    }
+    .response-container {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 15px;
+      margin-top: 15px;
+    }
+    .response-text {
+      background: white;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      padding: 10px;
+      font-size: 13px;
+      line-height: 1.4;
+      max-height: 150px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+    .loading {
+      text-align: center;
+      color: #6b7280;
+      font-style: italic;
     }
   </style>
 </head>
 <body>
   <div class="header">
-    <div class="logo">A</div>
-    <div class="title">AutoApply Pro</div>
+    <div class="logo">AutoApply Pro</div>
+    <div id="connectionStatus" class="connection-status disconnected">
+      Checking connection...
+    </div>
   </div>
 
-  <div class="status">
-    <div class="status-indicator">
-      <div class="dot" id="connectionDot"></div>
-      <span id="connectionStatus">Checking connection...</span>
-    </div>
-    <div id="userInfo" style="font-size: 12px; color: #64748b;"></div>
+  <div class="section">
+    <div class="section-title">Quick Actions</div>
+    <button id="detectForm" class="btn-primary">Detect Application Form</button>
+    <button id="fillForm" class="btn-success">Auto-Fill Application</button>
   </div>
 
-  <div id="detectedFields" class="detected-fields" style="display: none;">
-    <div class="detected-title">Detected Job Application Form</div>
-    <div id="detectedFieldsList"></div>
+  <div id="detectedFields" class="section hidden">
+    <div class="section-title">Detected Fields</div>
+    <div id="fieldsList" class="detected-fields">
+      <!-- Fields will be populated by JavaScript -->
+    </div>
   </div>
 
-  <button id="autoFillBtn" class="button" disabled>
-    Auto-Fill Application
-  </button>
-
-  <button id="generateResponseBtn" class="button secondary">
-    Generate AI Response
-  </button>
-
-  <div id="responseForm" class="form-fields">
-    <div class="field-group">
-      <label for="question">Question:</label>
-      <textarea id="question" placeholder="Enter the application question..."></textarea>
+  <div class="section">
+    <div class="section-title">AI Response Generator</div>
+    <button id="generateResponse" class="btn-secondary">Generate AI Response</button>
+    
+    <div id="responseForm" class="hidden">
+      <div class="form-field">
+        <label for="jobTitle">Job Title</label>
+        <input type="text" id="jobTitle" placeholder="e.g., Software Engineer">
+      </div>
+      <div class="form-field">
+        <label for="company">Company</label>
+        <input type="text" id="company" placeholder="e.g., Google">
+      </div>
+      <div class="form-field">
+        <label for="question">Question/Prompt</label>
+        <textarea id="question" placeholder="Why are you interested in this role?"></textarea>
+      </div>
+      <button id="submitGenerate" class="btn-primary">Generate Response</button>
+      <button id="cancelGenerate" class="btn-secondary">Cancel</button>
     </div>
-    <div class="field-group">
-      <label for="jobTitle">Job Title (optional):</label>
-      <input type="text" id="jobTitle" placeholder="e.g., Frontend Developer">
-    </div>
-    <div class="field-group">
-      <label for="company">Company (optional):</label>
-      <input type="text" id="company" placeholder="e.g., Google">
-    </div>
-    <button id="generateBtn" class="button">Generate Response</button>
-    <button id="cancelBtn" class="button secondary">Cancel</button>
-  </div>
 
-  <div id="generatedResponse" style="display: none; margin-top: 16px;">
-    <div style="background: #f0f9ff; padding: 12px; border-radius: 6px; border: 1px solid #0ea5e9;">
-      <div style="font-size: 12px; font-weight: 500; color: #0369a1; margin-bottom: 8px;">Generated Response:</div>
-      <div id="responseText" style="font-size: 12px; color: #1e293b; line-height: 1.4;"></div>
-      <button id="copyResponseBtn" class="button" style="margin-top: 8px; font-size: 12px; padding: 6px 12px;">
-        Copy to Clipboard
-      </button>
+    <div id="generatedResponse" class="response-container hidden">
+      <div id="responseText" class="response-text"></div>
+      <button id="copyResponse" class="btn-success">Copy Response</button>
+      <button id="closeResponse" class="btn-secondary">Close</button>
     </div>
   </div>
 

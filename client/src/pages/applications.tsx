@@ -53,7 +53,7 @@ export default function Applications() {
 
   // Filter applications based on status
   const filteredApplications = applications.filter((app: any) => 
-    statusFilter === "" || app.status === statusFilter
+    statusFilter === "" || statusFilter === "all" || app.status === statusFilter
   );
 
   // Calculate summary stats
@@ -162,7 +162,7 @@ export default function Applications() {
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Applications</SelectItem>
+              <SelectItem value="all">All Applications</SelectItem>
               <SelectItem value="pending">Pending</SelectItem>
               <SelectItem value="applied">Applied</SelectItem>
               <SelectItem value="under_review">Under Review</SelectItem>
