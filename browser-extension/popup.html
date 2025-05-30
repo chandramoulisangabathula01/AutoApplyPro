@@ -6,7 +6,7 @@
     body {
       width: 350px;
       padding: 20px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       margin: 0;
     }
     .header {
@@ -14,24 +14,22 @@
       margin-bottom: 20px;
     }
     .logo {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: bold;
       color: #2563eb;
-      margin-bottom: 5px;
     }
-    .connection-status {
+    .status {
       padding: 10px;
-      border-radius: 6px;
+      border-radius: 8px;
       margin-bottom: 15px;
-      text-align: center;
       font-size: 14px;
     }
-    .connected {
+    .status.connected {
       background: #dcfce7;
       color: #166534;
       border: 1px solid #bbf7d0;
     }
-    .disconnected {
+    .status.disconnected {
       background: #fef2f2;
       color: #dc2626;
       border: 1px solid #fecaca;
@@ -39,20 +37,22 @@
     .section {
       margin-bottom: 20px;
     }
-    .section-title {
+    .section h3 {
+      font-size: 14px;
       font-weight: 600;
       margin-bottom: 10px;
       color: #374151;
     }
-    button {
+    .btn {
       width: 100%;
       padding: 10px;
-      margin-bottom: 8px;
       border: none;
       border-radius: 6px;
       font-size: 14px;
-      cursor: pointer;
       font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 8px;
+      transition: all 0.2s;
     }
     .btn-primary {
       background: #2563eb;
@@ -69,68 +69,22 @@
     .btn-secondary:hover {
       background: #e5e7eb;
     }
-    .btn-success {
-      background: #10b981;
-      color: white;
-    }
-    .btn-success:hover {
-      background: #059669;
-    }
-    .form-field {
-      margin-bottom: 15px;
-    }
-    .form-field label {
-      display: block;
-      margin-bottom: 5px;
-      font-size: 13px;
-      font-weight: 500;
-      color: #374151;
-    }
-    .form-field input, .form-field textarea {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #d1d5db;
-      border-radius: 4px;
-      font-size: 14px;
-      box-sizing: border-box;
-    }
-    .form-field textarea {
-      height: 80px;
-      resize: vertical;
-    }
-    .detected-fields {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
+    .form-detected {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
       border-radius: 6px;
       padding: 12px;
       margin-bottom: 15px;
     }
-    .field-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 4px 0;
-      font-size: 13px;
+    .form-fields {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 5px;
     }
-    .field-label {
-      color: #64748b;
-    }
-    .field-status {
-      font-weight: 500;
-    }
-    .status-found {
-      color: #10b981;
-    }
-    .status-missing {
-      color: #f59e0b;
-    }
-    .hidden {
+    .response-section {
       display: none;
-    }
-    .response-container {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
+      background: #f9fafb;
+      border-radius: 8px;
       padding: 15px;
       margin-top: 15px;
     }
@@ -141,64 +95,66 @@
       padding: 10px;
       font-size: 13px;
       line-height: 1.4;
-      max-height: 150px;
+      max-height: 120px;
       overflow-y: auto;
-      margin-bottom: 10px;
     }
     .loading {
+      display: none;
       text-align: center;
-      color: #6b7280;
-      font-style: italic;
+      padding: 20px;
+    }
+    .spinner {
+      border: 2px solid #f3f4f6;
+      border-top: 2px solid #2563eb;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
   <div class="header">
     <div class="logo">AutoApply Pro</div>
-    <div id="connectionStatus" class="connection-status disconnected">
-      Checking connection...
+  </div>
+
+  <div id="connection-status" class="status disconnected">
+    <span id="status-text">Checking connection...</span>
+  </div>
+
+  <div class="section">
+    <h3>Form Detection</h3>
+    <button id="detect-form" class="btn btn-secondary">Detect Application Form</button>
+    <div id="form-detected" class="form-detected" style="display: none;">
+      <strong>Form detected!</strong>
+      <div id="form-fields" class="form-fields"></div>
     </div>
   </div>
 
   <div class="section">
-    <div class="section-title">Quick Actions</div>
-    <button id="detectForm" class="btn-primary">Detect Application Form</button>
-    <button id="fillForm" class="btn-success">Auto-Fill Application</button>
-  </div>
-
-  <div id="detectedFields" class="section hidden">
-    <div class="section-title">Detected Fields</div>
-    <div id="fieldsList" class="detected-fields">
-      <!-- Fields will be populated by JavaScript -->
-    </div>
+    <h3>Auto Fill</h3>
+    <button id="auto-fill" class="btn btn-primary" disabled>Fill Application</button>
   </div>
 
   <div class="section">
-    <div class="section-title">AI Response Generator</div>
-    <button id="generateResponse" class="btn-secondary">Generate AI Response</button>
-    
-    <div id="responseForm" class="hidden">
-      <div class="form-field">
-        <label for="jobTitle">Job Title</label>
-        <input type="text" id="jobTitle" placeholder="e.g., Software Engineer">
-      </div>
-      <div class="form-field">
-        <label for="company">Company</label>
-        <input type="text" id="company" placeholder="e.g., Google">
-      </div>
-      <div class="form-field">
-        <label for="question">Question/Prompt</label>
-        <textarea id="question" placeholder="Why are you interested in this role?"></textarea>
-      </div>
-      <button id="submitGenerate" class="btn-primary">Generate Response</button>
-      <button id="cancelGenerate" class="btn-secondary">Cancel</button>
-    </div>
+    <h3>AI Assistant</h3>
+    <button id="generate-response" class="btn btn-secondary">Generate Response</button>
+  </div>
 
-    <div id="generatedResponse" class="response-container hidden">
-      <div id="responseText" class="response-text"></div>
-      <button id="copyResponse" class="btn-success">Copy Response</button>
-      <button id="closeResponse" class="btn-secondary">Close</button>
-    </div>
+  <div id="response-section" class="response-section">
+    <h3>Generated Response</h3>
+    <div id="response-text" class="response-text"></div>
+    <button id="copy-response" class="btn btn-primary" style="margin-top: 10px;">Copy Response</button>
+  </div>
+
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+    <div>Processing...</div>
   </div>
 
   <script src="popup.js"></script>

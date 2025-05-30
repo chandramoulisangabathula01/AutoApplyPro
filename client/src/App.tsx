@@ -12,6 +12,7 @@ import JobSearch from "@/pages/job-search";
 import Applications from "@/pages/applications";
 import Settings from "@/pages/settings";
 import Subscribe from "@/pages/subscribe";
+import Analytics from "@/pages/analytics";
 import Sidebar from "@/components/layout/sidebar";
 
 function Router() {
@@ -38,6 +39,7 @@ function Router() {
               <Route path="/profile" component={Profile} />
               <Route path="/job-search" component={JobSearch} />
               <Route path="/applications" component={Applications} />
+              <Route path="/analytics" component={Analytics} />
               <Route path="/settings" component={Settings} />
               <Route path="/subscribe" component={Subscribe} />
             </div>

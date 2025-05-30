@@ -3,54 +3,41 @@ chrome.runtime.onInstalled.addListener(() => {
   console.log('AutoApply Pro extension installed');
 });
 
-// Handle messages from content script and popup
+// Handle messages from popup and content scripts
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   switch (request.action) {
-    case 'updateStatus':
-      // Store connection status
-      chrome.storage.local.set({
-        connected: request.connected,
-        statusMessage: request.message
+    case 'checkConnection':
+      // Check if user is authenticated with AutoApply Pro
+      fetch('https://autoapply-pro.replit.app/api/auth/user', {
+        credentials: 'include'
+      })
+      .then(response => {
+        if (response.ok) {
+          sendResponse({ connected: true, message: 'Connected to AutoApply Pro' });
+        } else {
+          sendResponse({ connected: false, message: 'Please log in to AutoApply Pro' });
+        }
+      })
+      .catch(() => {
+        sendResponse({ connected: false, message: 'Cannot connect to AutoApply Pro' });
       });
-      break;
+      return true; // Keep message channel open for async response
       
-    case 'showDetectedFields':
-      // Store detected fields for popup
-      chrome.storage.local.set({
-        detectedFields: request.fields
-      });
-      break;
-      
-    case 'showGeneratedResponse':
-      // Store generated response for popup
-      chrome.storage.local.set({
-        generatedResponse: request.response
-      });
+    case 'openApp':
+      chrome.tabs.create({ url: 'https://autoapply-pro.replit.app' });
       break;
   }
 });
 
-// Handle tab updates to inject content script
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete' && tab.url) {
-    const jobSites = [
-      'linkedin.com/jobs',
-      'indeed.com',
-      'glassdoor.com',
-      'workday.com',
-      'greenhouse.io',
-      'lever.co'
-    ];
-    
-    const isJobSite = jobSites.some(site => tab.url.includes(site));
-    
-    if (isJobSite) {
-      chrome.scripting.executeScript({
-        target: { tabId: tabId },
-        files: ['content.js']
-      }).catch(err => {
-        console.log('Content script already injected or failed to inject:', err);
-      });
-    }
+// Context menu for quick access
+chrome.contextMenus.create({
+  id: 'autoapply-detect',
+  title: 'Detect Job Application Form',
+  contexts: ['page']
+});
+
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId === 'autoapply-detect') {
+    chrome.tabs.sendMessage(tab.id, { action: 'detectForm' });
   }
 });
