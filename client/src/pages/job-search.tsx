@@ -81,7 +81,7 @@ export default function JobSearch() {
                     <SelectValue placeholder="Any Experience" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Any Experience</SelectItem>
+                    <SelectItem value="any">Any Experience</SelectItem>
                     <SelectItem value="entry">Entry Level</SelectItem>
                     <SelectItem value="mid">Mid Level</SelectItem>
                     <SelectItem value="senior">Senior Level</SelectItem>
