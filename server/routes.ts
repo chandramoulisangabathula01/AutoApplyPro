@@ -9,6 +9,9 @@ import path from "path";
 import fs from "fs";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Stripe from "stripe";
+import { emailService } from "./services/emailService";
+import { analyticsService } from "./services/analyticsService";
+import { jobPortalService } from "./services/jobPortalService";
 
 // Initialize Google Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
